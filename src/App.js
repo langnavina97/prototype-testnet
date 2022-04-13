@@ -528,7 +528,7 @@ class App extends Component {
                 <Card style={{ width: "900px" }}>
                   <Card.Content style={{ background: "#406ccd" }}>
                   <Card.Header style={{ color: "white" }}>
-                    <p style={{ color: "#C0C0C0", "font-weight": "bold", "text-align": "right" }}>APY: 12%</p>
+                    <p style={{ color: "#C0C0C0", "font-weight": "bold", "text-align": "right" }}>APY: XX%</p>
                       Top 10 Tokens
                       </Card.Header>
                     <Card.Description>
@@ -626,7 +626,7 @@ class App extends Component {
                 <Card style={{ width: "900px" }}>
                   <Card.Content style={{ background: "#406ccd" }}>
                   <Card.Header style={{ color: "white" }}>
-                      <p style={{ color: "#C0C0C0", "font-weight": "bold", "text-align": "right" }}>APY: 8%</p>
+                      <p style={{ color: "#C0C0C0", "font-weight": "bold", "text-align": "right" }}>APY: YY%</p>
                       Top 10 Metaverse Tokens
                       </Card.Header>
                     <Card.Description>
