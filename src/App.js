@@ -94,7 +94,8 @@ class App extends Component {
   async componentDidMount() {
     await this.loadWeb3();
     await this.loadBlockchainData();
-    await this.calcTokenBalances();
+    await this.calcTokenDeFiBalances();
+    await this.calcTokenNFTBalances();
     await this.getRate();
   }
 
@@ -172,7 +173,7 @@ class App extends Component {
       swal("Investment failed!");
     }
 
-    this.calcTokenBalances();
+    this.calcTokenNFTBalances();
   }
 
   investDeFi = async () => {
@@ -196,7 +197,7 @@ class App extends Component {
         swal("Investment failed!");
       }
 
-    this.calcTokenBalances();
+    this.calcTokenDeFiBalances();
 
   }
 
@@ -305,7 +306,7 @@ class App extends Component {
         console.log(err);
       });
 
-      this.calcTokenBalances();
+      this.calcTokenDeFiBalances();
   }
 
   withdrawNFT = async () => {
@@ -343,7 +344,7 @@ class App extends Component {
         console.log(err);
       });
 
-      this.calcTokenBalances();
+      this.calcTokenNFTBalances();
   }
 
   getExchangeRate = async (amountIn, address) => {
@@ -358,15 +359,12 @@ class App extends Component {
     return er[1];
   }
 
-  calcTokenBalances = async () => {
+  calcTokenDeFiBalances = async () => {
     const web3 = window.web3;
-
-    const nftTokenBalanceRes = await this.state.NFTTokenContract.methods.balanceOf(this.state.account).call();
-    const nftTokenBalance = web3.utils.fromWei(nftTokenBalanceRes, "ether");
 
     const defiTokenBalanceRes = await this.state.DeFiTokenContract.methods.balanceOf(this.state.account).call();
     const defiTokenBalance = web3.utils.fromWei(defiTokenBalanceRes, "ether");
-
+    
     const btcTokenBalanceRes = await this.state.SwapContract.methods.btcBalance(this.state.account).call();
     const helperBtc = await this.getExchangeRate(btcTokenBalanceRes, "0x4b1851167f74FF108A994872A160f1D6772d474b");
     const btcTokenBalanceBnb = web3.utils.fromWei(helperBtc, "ether");
@@ -376,6 +374,7 @@ class App extends Component {
     const helperEth = await this.getExchangeRate(ethTokenBalanceRes, "0x8BaBbB98678facC7342735486C851ABD7A0d17Ca");
     const ethTokenBalanceBnb = web3.utils.fromWei(helperEth, "ether");
     const ethTokenBalance = web3.utils.fromWei(ethTokenBalanceRes, "ether");
+    console.log("eth", ethTokenBalance);
 
     const shibaTokenBalanceRes = await this.state.SwapContract.methods.shibaBalance(this.state.account).call();
     const helperShib = await this.getExchangeRate(shibaTokenBalanceRes, "0xBf0646Fa5ABbFf6Af50a9C40D5E621835219d384");
@@ -417,69 +416,83 @@ class App extends Component {
     const helperSteth = await this.getExchangeRate(stethTokenBalanceRes, "0xb7a58582Df45DBa8Ad346c6A51fdb796D64e0898");
     const stethTokenBalanceBnb = web3.utils.fromWei(helperSteth, "ether");
     const stethTokenBalance = web3.utils.fromWei(stethTokenBalanceRes, "ether");
-
-    // NFT
-    const axsTokenBalanceRes = await this.state.NFTPortfolioContract.methods.axsBalance(this.state.account).call();
-    const helperAxs = await this.getExchangeRate(axsTokenBalanceRes, "0xf34D883EcdE3238B153f38230987a0F4c221a48F");
-    const axsTokenBalanceBnb = web3.utils.fromWei(helperAxs, "ether");
-    const axsTokenBalance = web3.utils.fromWei(axsTokenBalanceRes, "ether");
-
-    const manaTokenBalanceRes = await this.state.NFTPortfolioContract.methods.manaBalance(this.state.account).call();
-    const helperMana = await this.getExchangeRate(manaTokenBalanceRes, "0x8bf2dF0Ff8528088475183a68678bd1Cd7691b69");
-    const manaTokenBalanceBnb = web3.utils.fromWei(helperMana, "ether");
-    const manaTokenBalance = web3.utils.fromWei(manaTokenBalanceRes, "ether");
-
-    const sandTokenBalanceRes = await this.state.NFTPortfolioContract.methods.sandBalance(this.state.account).call();
-    const helperSand = await this.getExchangeRate(sandTokenBalanceRes, "0x1631A54AC95Ecb0085dB6b8ACf80c4Cee72AEB06");
-    const sandTokenBalanceBnb = web3.utils.fromWei(helperSand, "ether");
-    const sandTokenBalance = web3.utils.fromWei(sandTokenBalanceRes, "ether");
-
-    const thetaTokenBalanceRes = await this.state.NFTPortfolioContract.methods.thetaBalance(this.state.account).call();
-    const helperTheate = await this.getExchangeRate(thetaTokenBalanceRes, "0x19A5E53eC7B385dbE2E587Ba989eA2AB8F7EaF1e");
-    const thetaTokenBalanceBnb = web3.utils.fromWei(helperTheate, "ether");
-    const thetaTokenBalance = web3.utils.fromWei(thetaTokenBalanceRes, "ether");
-
-    const flowTokenBalanceRes = await this.state.NFTPortfolioContract.methods.flowBalance(this.state.account).call();
-    const helperFlow = await this.getExchangeRate(flowTokenBalanceRes, "0xe5c48084E1974a971Bd5dF4d9B01daCCA86d5567");
-    const flowTokenBalanceBnb = web3.utils.fromWei(helperFlow, "ether");
-    const flowTokenBalance = web3.utils.fromWei(flowTokenBalanceRes, "ether");
-
-    const xtzTokenBalanceRes = await this.state.NFTPortfolioContract.methods.xtzBalance(this.state.account).call();
-    const helperXtz = await this.getExchangeRate(xtzTokenBalanceRes, "0xC5De9d5B0BA5b408a3e9530A1BC310d8F2dCC26a");
-    const xtzTokenBalanceBnb = web3.utils.fromWei(helperXtz, "ether");
-    const xtzTokenBalance = web3.utils.fromWei(xtzTokenBalanceRes, "ether");
-
-    const galaTokenBalanceRes = await this.state.NFTPortfolioContract.methods.galaBalance(this.state.account).call();
-    const helperGala = await this.getExchangeRate(galaTokenBalanceRes, "0x4bf1CE8E4c4c86126E57Fa9fc3f1a9631661641c");
-    const galaTokenBalanceBnb = web3.utils.fromWei(helperGala, "ether");
-    const galaTokenBalance = web3.utils.fromWei(galaTokenBalanceRes, "ether");
-
-    const chzTokenBalanceRes = await this.state.NFTPortfolioContract.methods.chzBalance(this.state.account).call();
-    const helperChz = await this.getExchangeRate(chzTokenBalanceRes, "0xdeEC6f0C22970b9b8a47069bE619bfAe646dEe26");
-    const chzTokenBalanceBnb = web3.utils.fromWei(helperChz, "ether");
-    const chzTokenBalance = web3.utils.fromWei(chzTokenBalanceRes, "ether");
-
-    const enjTokenBalanceRes = await this.state.NFTPortfolioContract.methods.enjBalance(this.state.account).call();
-    const helperEnj = await this.getExchangeRate(enjTokenBalanceRes, "0xb08A1959f57b9cC8e5A5F1d329EfD90EE3438F65");
-    const enjTokenBalanceBnb = web3.utils.fromWei(helperEnj, "ether");
-    const enjTokenBalance = web3.utils.fromWei(enjTokenBalanceRes, "ether");
-
-    const roseTokenBalanceRes = await this.state.NFTPortfolioContract.methods.roseBalance(this.state.account).call();
-    const helperRose = await this.getExchangeRate(roseTokenBalanceRes, "0x30c1AC77F4068A063648B549ffF96Ddb9d151325");
-    const roseTokenBalanceBnb = web3.utils.fromWei(helperRose, "ether");
-    const roseTokenBalance = web3.utils.fromWei(roseTokenBalanceRes, "ether");
+    console.log("steth", stethTokenBalance);
 
     this.setState({
-      nftTokenBalance, defiTokenBalance,
+      defiTokenBalance,
       btcTokenBalance, ethTokenBalance, shibaTokenBalance, xrpTokenBalance, ltcTokenBalance,
       btcTokenBalanceBnb, ethTokenBalanceBnb, shibaTokenBalanceBnb, xrpTokenBalanceBnb, ltcTokenBalanceBnb,
       daiTokenBalance, lunaTokenBalance, linkTokenBalance, uniTokenBalance, stethTokenBalance,
       daiTokenBalanceBnb, lunaTokenBalanceBnb, linkTokenBalanceBnb, uniTokenBalanceBnb, stethTokenBalanceBnb,
-      axsTokenBalance, manaTokenBalance, sandTokenBalance, thetaTokenBalance, flowTokenBalance,
-      axsTokenBalanceBnb, manaTokenBalanceBnb, sandTokenBalanceBnb, thetaTokenBalanceBnb, flowTokenBalanceBnb,
-      xtzTokenBalance, galaTokenBalance, chzTokenBalance, enjTokenBalance, roseTokenBalance,
-      xtzTokenBalanceBnb, galaTokenBalanceBnb, chzTokenBalanceBnb, enjTokenBalanceBnb, roseTokenBalanceBnb
     });
+  }
+
+    calcTokenNFTBalances = async () => {
+      const web3 = window.web3;
+
+      const nftTokenBalanceRes = await this.state.NFTTokenContract.methods.balanceOf(this.state.account).call();
+      const nftTokenBalance = web3.utils.fromWei(nftTokenBalanceRes, "ether");
+    
+      const axsTokenBalanceRes = await this.state.NFTPortfolioContract.methods.axsBalance(this.state.account).call();
+      const helperAxs = await this.getExchangeRate(axsTokenBalanceRes, "0xf34D883EcdE3238B153f38230987a0F4c221a48F");
+      const axsTokenBalanceBnb = web3.utils.fromWei(helperAxs, "ether");
+      const axsTokenBalance = web3.utils.fromWei(axsTokenBalanceRes, "ether");
+
+      const manaTokenBalanceRes = await this.state.NFTPortfolioContract.methods.manaBalance(this.state.account).call();
+      const helperMana = await this.getExchangeRate(manaTokenBalanceRes, "0x8bf2dF0Ff8528088475183a68678bd1Cd7691b69");
+      const manaTokenBalanceBnb = web3.utils.fromWei(helperMana, "ether");
+      const manaTokenBalance = web3.utils.fromWei(manaTokenBalanceRes, "ether");
+
+      const sandTokenBalanceRes = await this.state.NFTPortfolioContract.methods.sandBalance(this.state.account).call();
+      const helperSand = await this.getExchangeRate(sandTokenBalanceRes, "0x1631A54AC95Ecb0085dB6b8ACf80c4Cee72AEB06");
+      const sandTokenBalanceBnb = web3.utils.fromWei(helperSand, "ether");
+      const sandTokenBalance = web3.utils.fromWei(sandTokenBalanceRes, "ether");
+
+      const thetaTokenBalanceRes = await this.state.NFTPortfolioContract.methods.thetaBalance(this.state.account).call();
+      const helperTheate = await this.getExchangeRate(thetaTokenBalanceRes, "0x19A5E53eC7B385dbE2E587Ba989eA2AB8F7EaF1e");
+      const thetaTokenBalanceBnb = web3.utils.fromWei(helperTheate, "ether");
+      const thetaTokenBalance = web3.utils.fromWei(thetaTokenBalanceRes, "ether");
+
+      const flowTokenBalanceRes = await this.state.NFTPortfolioContract.methods.flowalance(this.state.account).call();
+      const helperFlow = await this.getExchangeRate(flowTokenBalanceRes, "0xe5c48084E1974a971Bd5dF4d9B01daCCA86d5567");
+      const flowTokenBalanceBnb = web3.utils.fromWei(helperFlow, "ether");
+      const flowTokenBalance = web3.utils.fromWei(flowTokenBalanceRes, "ether");
+
+      console.log(flowTokenBalanceRes);
+
+      const xtzTokenBalanceRes = await this.state.NFTPortfolioContract.methods.xtzBalance(this.state.account).call();
+      const helperXtz = await this.getExchangeRate(xtzTokenBalanceRes, "0xC5De9d5B0BA5b408a3e9530A1BC310d8F2dCC26a");
+      const xtzTokenBalanceBnb = web3.utils.fromWei(helperXtz, "ether");
+      const xtzTokenBalance = web3.utils.fromWei(xtzTokenBalanceRes, "ether");
+
+      const galaTokenBalanceRes = await this.state.NFTPortfolioContract.methods.galaBalance(this.state.account).call();
+      const helperGala = await this.getExchangeRate(galaTokenBalanceRes, "0x4bf1CE8E4c4c86126E57Fa9fc3f1a9631661641c");
+      const galaTokenBalanceBnb = web3.utils.fromWei(helperGala, "ether");
+      const galaTokenBalance = web3.utils.fromWei(galaTokenBalanceRes, "ether");
+
+      const chzTokenBalanceRes = await this.state.NFTPortfolioContract.methods.chzBalance(this.state.account).call();
+      const helperChz = await this.getExchangeRate(chzTokenBalanceRes, "0xdeEC6f0C22970b9b8a47069bE619bfAe646dEe26");
+      const chzTokenBalanceBnb = web3.utils.fromWei(helperChz, "ether");
+      const chzTokenBalance = web3.utils.fromWei(chzTokenBalanceRes, "ether");
+
+      const enjTokenBalanceRes = await this.state.NFTPortfolioContract.methods.enjBalance(this.state.account).call();
+      const helperEnj = await this.getExchangeRate(enjTokenBalanceRes, "0xb08A1959f57b9cC8e5A5F1d329EfD90EE3438F65");
+      const enjTokenBalanceBnb = web3.utils.fromWei(helperEnj, "ether");
+      const enjTokenBalance = web3.utils.fromWei(enjTokenBalanceRes, "ether");
+
+      const roseTokenBalanceRes = await this.state.NFTPortfolioContract.methods.roseBalance(this.state.account).call();
+      const helperRose = await this.getExchangeRate(roseTokenBalanceRes, "0x30c1AC77F4068A063648B549ffF96Ddb9d151325");
+      const roseTokenBalanceBnb = web3.utils.fromWei(helperRose, "ether");
+      const roseTokenBalance = web3.utils.fromWei(roseTokenBalanceRes, "ether");
+      console.log("rose", roseTokenBalance);
+
+      this.setState({
+        nftTokenBalance,
+        axsTokenBalance, manaTokenBalance, sandTokenBalance, thetaTokenBalance, flowTokenBalance,
+        axsTokenBalanceBnb, manaTokenBalanceBnb, sandTokenBalanceBnb, thetaTokenBalanceBnb, flowTokenBalanceBnb,
+        xtzTokenBalance, galaTokenBalance, chzTokenBalance, enjTokenBalance, roseTokenBalance,
+        xtzTokenBalanceBnb, galaTokenBalanceBnb, chzTokenBalanceBnb, enjTokenBalanceBnb, roseTokenBalanceBnb
+      });
   }
 
   getRate = async () => {
